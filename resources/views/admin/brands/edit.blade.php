@@ -19,7 +19,7 @@
 <section class="content">
     <!-- Default box -->
     <div class="container-fluid">
-        <form action="{{ route('brands.update') }}" method="post" name="brandsForm" id="brandsForm">
+        <form action="" method="post" name="brandsFormUpdate" id="brandsFormUpdate">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -62,13 +62,13 @@
 
 @section('customJs')
 <script>
-    $("#brandsForm").submit(function(event) {
+    $("#brandsFormUpdate").submit(function(event) {
         event.preventDefault();
         var element = $(this);
         $("button[type=submit]").prop('disabled', true);
         $.ajax({
-            url: '{{ route("brands.store") }}',
-            type: 'post',
+            url: '{{ route("brands.update", $brands->id) }}',
+            type: 'PUT',
             data: element.serializeArray(),
             dataType: 'json',
             success: function(response) {

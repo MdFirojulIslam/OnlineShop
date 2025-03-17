@@ -19,7 +19,8 @@
 <section class="content">
     <!-- Default box -->
     <div class="container-fluid">
-        <form action="{{ route('categories.update') }}" method="post" id="categoryForm" name="categoryForm">
+        <form action="" method="post" id="categoryUpdateForm" name="categoryUpdateForm" enctype="multipart/form-data">
+            @csrf
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -40,7 +41,7 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <input type="hidden" name="image_id" id="image_id", value="">
+                                <input type="hidden" name="image_id" id="image_id" value="">
                                 <label for="image">Image</label>
                                 <div id="image" class="dropzone dz-clickable">
                                     <div class="dz-message needsclick">
@@ -64,6 +65,16 @@
                                 </select>
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="status">Show On Home</label>
+                                <select name="showHome" id="showHome" class="form-control">
+                                    <option {{ ($category->showHome=='Yes') ? 'selected' : '' }} value="Yes">Active</option>
+                                    <option {{ ($category->showHome=="No") ? 'selected' : '' }} value="No">Block</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,13 +93,17 @@
 
 @section('customJs')
 <script>
-    $("#categoryForm").submit(function(event) {
+    
+    $("#categoryUpdateForm").submit(function(event) {
+
         event.preventDefault();
         var element = $(this);
+
         $("button[type=submit]").prop('disabled', true);
+
         $.ajax({
             url: '{{ route("categories.update", $category->id) }}',
-            type: 'put',
+            type: 'PUT',
             data: element.serializeArray(),
             dataType: 'json',
             success: function(response) {
@@ -104,11 +119,12 @@
                         .siblings('p')
                         .removeClass('invalid-feedback').html("");
                 } else {
-                    if(response["notFound"] == true){
+                    if (response["notFound"] == true) {
                         window.location.href = "{{ route('categories.index') }}"
                     }
-                    
+
                     var errors = response['errors'];
+                    
                     if (errors['name']) {
                         $("#name").addClass('is-invalid')
                             .siblings('p')
@@ -156,6 +172,7 @@
             }
         });
     });
+
     Dropzone.autoDiscover = false;
     const dropzone = $("#image").dropzone({
         init: function() {

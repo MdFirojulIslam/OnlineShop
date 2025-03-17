@@ -44,6 +44,7 @@ class SubCategoryController extends Controller
             $subCategory->name = $request->name;
             $subCategory->slug = $request->slug;
             $subCategory->status = $request->status;
+            $subCategory->showHome = $request->showHome;
             $subCategory->category_id = $request->category;
             $subCategory->save();
 
@@ -88,7 +89,7 @@ class SubCategoryController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'slug' => 'required|unique::sub_categories,' . $subCategory->id . ',id',
+            'slug' => 'required|unique:sub_categories,slug,' . $subCategory->id,
             'category' => 'required',
             'status' => 'required'
         ]);
@@ -97,6 +98,7 @@ class SubCategoryController extends Controller
             $subCategory->name = $request->name;
             $subCategory->slug = $request->slug;
             $subCategory->status = $request->status;
+            $subCategory->showHome = $request->showHome;
             $subCategory->category_id = $request->category;
             $subCategory->save();
 
@@ -114,24 +116,22 @@ class SubCategoryController extends Controller
         }
     }
 
-    public function destroy($id, Request $request)
+    public function destroy($subCategoryID, Request $request)
     {
-        $subCategory = SubCategory::find($id);
+        $subCategory = SubCategory::find($subCategoryID);
 
         if (empty($subCategory)) {
-            $request->session()->flash('error', 'Record not found');
             return response([
                 'status' => false,
                 'notFound' => true
-            ]);
+            ], 404);
         }
 
         $subCategory->delete();
-        $request->session()->flash('success', 'Sub Category deleted successfully');
 
         return response([
             'status' => true,
-            'messege' => 'Sub Category deleted successfully'
-        ]);
+            'message' => 'Sub Category deleted successfully'
+        ], 200);
     }
 }

@@ -8,11 +8,13 @@ use App\Http\Controllers\Controller;
 use App\Models\TempImage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use Image;
+
 
 class CategoryController extends Controller
 {
     public function index(Request $request)
-    {
+    { 
         $categories = Category::latest();
 
         if (!empty($request->get('keywords'))) {
@@ -38,6 +40,7 @@ class CategoryController extends Controller
             $category->name = $request->name;
             $category->slug = $request->slug;
             $category->status = $request->status;
+            $category->showHome = $request->showHome;
             $category->save();
 
             //Save Image Here
@@ -51,10 +54,10 @@ class CategoryController extends Controller
                 $dPath = public_path() . '/uploads/category/' . $newImageName;
                 File::copy($sPath, $dPath);
 
-                // $dPath = public_path() . '/uploads/category/thumb/' . $newImageName;
-                // $img = Image::make($sPath);
-                // $img->resize(450,600);
-                // $img->save($dPath);
+                $dPath = public_path() . '/uploads/category/thumb/' . $newImageName;
+                $img = Image::make($sPath);
+                $img->resize(450,600);
+                $img->save($dPath);
 
 
                 $category->image = $newImageName;
@@ -87,23 +90,25 @@ class CategoryController extends Controller
     public function update($categoryID, Request $request)
     {
         $category = Category::find($categoryID);
+        
         if (empty($category)) {
             return response()->json([
                 'status' => false,
                 'notFound' => true,
-                'messege' => 'Category not found'
+                'message' => 'Category not found'
             ]);
         }
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'slug' => 'required|unique::categories,' . $category->id . ',id',
+            'slug' => 'required|unique:categories,slug,' . $category->id,
         ]);
         
         if ($validator->passes()) {
             $category->name = $request->name;
             $category->slug = $request->slug;
             $category->status = $request->status;
+            $category->showHome = $request->showHome;
             $category->save();
 
             $oldImage = $category->image;
@@ -118,10 +123,10 @@ class CategoryController extends Controller
                 $dPath = public_path() . '/uploads/category/' . $newImageName;
                 File::copy($sPath, $dPath);
 
-                // $dPath = public_path() . '/uploads/category/thumb/' . $newImageName;
-                // $img = Image::make($sPath);
-                // $img->resize(450,600);
-                // $img->save($dPath);
+                $dPath = public_path() . '/uploads/category/thumb/' . $newImageName;
+                $img = Image::make($sPath);
+                $img->resize(450,600);
+                $img->save($dPath);
 
 
                 $category->image = $newImageName;
@@ -147,22 +152,26 @@ class CategoryController extends Controller
 
     public function destroy($categoryID, Request $request) {
         $category = Category::find($categoryID);
+
         if (empty($category)) {
-            $request->session()->flash('error', 'Category Not found');
+            $request->session()->flash('error', 'Category Not Found');
             return response()->json([
-                'status' => true,
-                'messege' => 'Category not found'
-            ]);
-            //return redirect()->route('categories.index');
+                'status' => false,
+                'message' => 'Category not found'
+            ], 404);
         }
 
-        File::delete(public_path() . '/uploads/category/' . $category->image);
-        $category->delete();
+        if (!empty($category->image)){
+            File::delete(public_path() . '/uploads/category/' . $category->image);
+        }
 
-        $request->session()->flash('success', 'Category deleted successfully');
+        $category->delete();
+        $request->session()->flash('success', 'Products deleted successfully');
+
         return response()->json([
             'status' => true,
-            'messege' => 'Category deleted successfully'
-        ]);
+            'message' => 'Category deleted successfully'
+        ], 200);
     }
+
 }

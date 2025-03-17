@@ -6,10 +6,10 @@
     <div class="container-fluid my-2">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Categories</h1>
+                <h1>Brands</h1>
             </div>
             <div class="col-sm-6 text-right">
-                <a href="{{ route('categories.create') }}" class="btn btn-primary">New Category</a>
+                <a href="{{ route('brands.create') }}" class="btn btn-primary">New Brands</a>
             </div>
         </div>
     </div>
@@ -19,7 +19,7 @@
 <section class="content">
     <!-- Default box -->
     <div class="container-fluid">
-        @include('admin.messege')
+        @include('admin.message')
         <div class="card">
             <form action="" method="get">
                 <div class="card-header">
@@ -105,14 +105,16 @@
 <script>
     function deleteBrands(id) {
 
-        var url = '';
+        var url = '{{ route("brands.delete", "ID") }}';
         var newUrl = url.replace("ID", id)
 
-        if (confim("Are you sure you want to delete")) {
+        if (confirm("Are you sure you want to delete")) {
             $.ajax({
                 url: newUrl,
-                type: 'delete',
-                data: {},
+                type: 'POST',
+                data: {
+                    _method: 'DELETE'
+                },
                 dataType: 'json',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
