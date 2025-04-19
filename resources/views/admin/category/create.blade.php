@@ -28,7 +28,7 @@
                                 <label for="name">Name</label>
                                 <input type="text" name="name" id="name" class="form-control" placeholder="Name">
                                 <p></p>
-                            </div>
+                            </div>  
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">

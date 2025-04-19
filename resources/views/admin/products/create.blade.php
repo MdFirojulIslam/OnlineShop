@@ -41,8 +41,20 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="mb-3">
+                                        <label for="short_description">Short Description</label>
+                                        <textarea name="short_description" id="short_description" cols="30" rows="10" class="summernote" placeholder=""> </textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
                                         <label for="description">Description</label>
                                         <textarea name="description" id="description" cols="30" rows="10" class="summernote" placeholder="Description"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="shipping_returns">Shipping and Description</label>
+                                        <textarea name="shipping_returns" id="shipping_returns" cols="30" rows="10" class="summernote" placeholder=""></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -99,6 +111,17 @@
                                     <div class="mb-3">
                                         <label for="barcode">Barcode</label>
                                         <input type="text" name="barcode" id="barcode" class="form-control" placeholder="Barcode">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label>Related Products</label>
+                                        <div class="mb-3">
+                                            <select multiple class="related_product w-100" name="related_products[]" id="related_products">
+                                                <option value=""></option>
+                                            </select>
+                                            <p class="error"></p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -197,6 +220,21 @@
 
 @section('customJs')
 <script>
+    $('.related_product').select2({
+        ajax: {
+            url: '{{ route("products.getProducts") }}',
+            dataType: 'json',
+            tags: true,
+            multiple: true,
+            minimumInputLength: 3,
+            processResults: function(data) {
+                return {
+                    results: data.tags
+                };
+            }
+        }
+    });
+
     $("#title").change(function() {
         element = $(this);
         $("button[type=submit]").prop('disabled', true);
@@ -299,12 +337,13 @@
             </div></div>`
             $("#product-gallery").append(html);
         },
-        complete:function(file) {
+        complete: function(file) {
             this.removeFile(file);
         }
     });
+
     function deleteImage(id) {
-        $("#image-row"+id).remove();
+        $("#image-row" + id).remove();
     }
 </script>
 @endsection

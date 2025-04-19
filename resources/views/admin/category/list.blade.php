@@ -43,7 +43,8 @@
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>
-                            <th width="60">ID</th>
+                            <th>ID</th>
+                            <th>Image</th>
                             <th>Name</th>
                             <th>Slug</th>
                             <th width="100">Status</th>
@@ -55,6 +56,14 @@
                         @foreach($categories as $category)
                         <tr>
                             <td>{{ $category->id }}</td>
+                            <td>
+                                @if($category->image)
+                                <img src="{{ asset('uploads/category/' . $category->image) }}" alt="{{ $category->name }}" width="50" height="50" style="border-radius: 50%;">
+                                @else
+                                <img src="{{ asset('default-image/default-image.jpg') }}" alt="Default Image" width="50" height="50" style="border-radius: 50%;">
+                                @endif
+                            </td>
+
                             <td>{{ $category->name }}</td>
                             <td>{{ $category->slug }}</td>
                             <td>
@@ -111,7 +120,7 @@
         if (confirm("Are you sure you want to delete")) {
             $.ajax({
                 url: newUrl,
-                type: 'POST', 
+                type: 'POST',
                 data: {
                     _method: 'DELETE'
                 },
