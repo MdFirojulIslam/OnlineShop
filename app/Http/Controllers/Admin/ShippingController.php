@@ -19,7 +19,7 @@ class ShippingController extends Controller
             ->leftJoin('countries', 'countries.id', 'shipping_charges.country_id')->get();
         $data['shippingCharges'] = $shippingCharges;
 
-        return view('admin.shipping.create', $data);
+        return view('admin.shipping.create', $data); 
     }
     public function store(Request $request)
     {

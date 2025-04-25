@@ -8,11 +8,15 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\DiscountCodeController;
+use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PagesController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSubCategoryController;
 use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\TempImagesController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FrontController;
@@ -50,7 +54,7 @@ Route::group(['prefix' => 'account'], function () {
 
     Route::group(['middleware' => 'guest'], function () {
         Route::get('/login', [AuthController::class, 'login'])->name('account.login');
-        Route::post('/login', [AuthController::class, 'authenticate'])->name('account.authenticate');
+        Route::get('/login', [AuthController::class, 'authenticate'])->name('account.authenticate');
 
         Route::get('/register', [AuthController::class, 'register'])->name('account.register');
         Route::get('/process_register', [AuthController::class, 'processRegister'])->name('account.processRegister');
@@ -125,6 +129,18 @@ Route::group(['prefix' => 'admin'], function () {
         // Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.delete');
         // Route::put('/products/{products}', [ProductController::class, 'update'])->name('products.update');
         // Route::get('/get_products', [ProductController::class, 'getProducts'])->name('products.getProducts');
+
+        //Orders route
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+
+        //Users route
+        Route::get('/discounts', [DiscountController::class, 'index'])->name('discount.index');
+
+        //Users route
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
+        //Pages route
+        Route::get('/pages', [PagesController::class, 'index'])->name('pages.index');
 
         //temp-images.create
         Route::post('/upload-temp-image', [TempImagesController::class, 'create'])->name('temp-images.create');

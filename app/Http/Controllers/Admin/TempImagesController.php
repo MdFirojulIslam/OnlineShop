@@ -38,7 +38,7 @@ class TempImagesController extends Controller
         $sourcePath = $tempPath . '/' . $newName;
         $thumbFullPath = $thumbPath . '/' . $newName;
 
-        $manager = new ImageManager(new GdDriver()); 
+        $manager = new ImageManager(new GdDriver());
         $img = $manager->read($sourcePath)->cover(300, 275);
         $img->save($thumbFullPath);
 

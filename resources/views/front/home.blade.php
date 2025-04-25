@@ -134,13 +134,15 @@
         <div class="row pb-3">
             @if($featureProducts->isNotEmpty())
             @foreach($featureProducts as $featureProduct)
-            
+
             <div class="col-md-3">
                 <div class="card product-card">
                     <div class="product-image position-relative">
                         <a href="{{ route('front.product', $featureProduct->slug) }}" class="product-img">
-                            @if(!empty($productImage->image))
-                            <img class="card-img-top" src="{{ asset('uploads/product/small/'.$productImage->image) }}" class="img-thumbnail">
+                            @if(!empty($featureProduct->image) && !empty($featureProduct->image->image))
+                            <img src="{{ asset('uploads/product/large/'.$featureProduct->image->image) }}" alt="" class="img-fluid">
+                            @else
+                            <img src="{{ asset('front-assets/images/default-product.jpg') }}" alt="No image" class="img-fluid">
                             @endif
                         </a>
                         <a class="whishlist" href="222"><i class="far fa-heart"></i></a>
@@ -174,8 +176,43 @@
         <div class="section-title">
             <h2>Latest Produsts</h2>
         </div>
-        
+        <div class="row pb-3">
+            @if($latestProducts->isNotEmpty())
+            @foreach($latestProducts as $latestProduct)
 
+            <div class="col-md-3">
+                <div class="card product-card">
+                    <div class="product-image position-relative">
+                        <a href="{{ route('front.product', $latestProduct->slug) }}" class="product-img">
+
+                            @if(!empty($latestProduct->image != ""))
+                            <img src="{{ asset('uploads/product/large/'.$latestProduct->image->image) }}" alt="" class="img-fluid">
+                            @else
+                            <img src="{{ asset('uploads/category/thumb/'.$category->image) }}" alt="" class="img-fluid">
+                            @endif
+                        </a>
+                        <a class="whishlist" href="222"><i class="far fa-heart"></i></a>
+
+                        <div class="product-action">
+                            <a class="btn btn-dark" href="javascript:void(0);" onclick="addToCart({{ $latestProduct->id }});">
+                                <i class="fa fa-shopping-cart"></i> Add To Cart
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body text-center mt-3">
+                        <a class="h6 link" href="product.php">{{ $latestProduct->title }}</a>
+                        <div class="price mt-2">
+                            <span class="h5"><strong>{{ $latestProduct->price }}</strong></span>
+                            @if($latestProduct->compare_price > 0)
+                            <span class="h6 text-underline"><del>{{ $latestProduct->compare_price }}</del></span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+            @endif
+        </div>
     </div>
 </section>
 @endsection

@@ -34,11 +34,6 @@ class CartController extends Controller
         }
 
         if (Cart::count() > 0) {
-            // echo "Product already exists in cart";
-            // Products found in cart
-            // Check if this product already in the cart
-            // Return as message that product already added in your cart
-            // if product not found in the cart, then add product in cart
 
             $cartContent = Cart::content();
             $productAlreadyExist = false;

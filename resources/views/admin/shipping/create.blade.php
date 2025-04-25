@@ -66,7 +66,7 @@
                                 <th>Action</th>
                             </tr>
                             @if($shippingCharges->isNotEmpty())
-                            foreach($shippingCharges as $shippingCharge)
+                            @foreach($shippingCharges as $shippingCharge)
                             <tr>
                                 <td>{{ $shippingCharge->id }}</td>
                                 <td>{{ $shippingCharge->name }}</td>

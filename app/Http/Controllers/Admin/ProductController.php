@@ -23,10 +23,11 @@ class ProductController extends Controller
     {
         $products = Product::latest();
         if (!empty($request->get('keywords'))) {
-            $products = $products->where('name', 'like', "%" . $request->get('keywords') . "%");
-        }
-        $products = $products->paginate(10);
-        return view('admin.products.list', compact('products'));
+            $products = $products->where('title', 'like', "%" . $request->get('keywords') . "%");
+        } 
+        $products = $products->paginate(10);     
+        $data['products'] = $products;
+        return view('admin.products.list', $data);
     }
 
     public function create()

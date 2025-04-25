@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Category;
 use App\Models\TempImage;
 use Illuminate\Http\Request;
+use Intervention\Image\Image;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\File;
 
+use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
@@ -112,50 +113,59 @@ class CategoryController extends Controller
             'slug' => 'required|unique:categories,slug,' . $category->id,
         ]);
 
-        if ($validator->passes()) {
-            $category->name = $request->name;
-            $category->slug = $request->slug;
-            $category->status = $request->status;
-            $category->showHome = $request->showHome;
-            $category->save();
-
-            $oldImage = $category->image;
-            //Save Image Here
-            if (!empty($request->image_id)) {
-                $tempImage = TempImage::find($request->image_id);
-                $extArray = explode('.', $tempImage->name);
-                $ext = last($extArray);
-
-                $newImageName = $category->id . '_' . time() . '.' . $ext;
-                $sPath = public_path() . '/temp/' . $tempImage->name;
-                $dPath = public_path() . '/uploads/category/' . $newImageName;
-                File::copy($sPath, $dPath);
-
-                $dPath = public_path() . '/uploads/category/thumb/' . $newImageName;
-                $img = Image::make($sPath);
-                $img->resize(450, 600);
-                $img->save($dPath);
-
-
-                $category->image = $newImageName;
-                $category->save();
-
-                //delelete old images here
-                File::delete(public_path() . '/uploads/category/' . $oldImage);
-            }
-
-            $request->session()->flash('success', 'Category updated successfully');
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Category updated successfully'
-            ]);
-        } else {
+        if ($validator->fails()) {
             return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()
             ]);
         }
+
+        $category->name = $request->name;
+        $category->slug = $request->slug;
+        $category->status = $request->status;
+        $category->showHome = $request->showHome;
+        $oldImage = $category->image;
+
+        if (!empty($request->image_id)) {
+            $tempImage = TempImage::find($request->image_id);
+
+            if ($tempImage) {
+                $ext = pathinfo($tempImage->name, PATHINFO_EXTENSION);
+                $newImageName = $category->id . '_' . time() . '.' . $ext;
+
+                $sPath = public_path('temp/' . $tempImage->name);
+                $dPath = public_path('uploads/category/' . $newImageName);
+                $thumbPath = public_path('uploads/category/thumb/' . $newImageName);
+
+                if (File::exists($sPath)) {
+                    // Copy original image
+                    File::copy($sPath, $dPath);
+
+                    $manager = new ImageManager(new GdDriver());
+                    $img = $manager->read($sPath)->cover(450, 600); // Or use ->resize() if needed
+                    $img->save($thumbPath);
+
+                    // Update DB
+                    $category->image = $newImageName;
+                    $category->save();
+
+                    // Delete old image
+                    if (!empty($oldImage)) {
+                        File::delete(public_path('uploads/category/' . $oldImage));
+                        File::delete(public_path('uploads/category/thumb/' . $oldImage));
+                    }
+                }
+            }
+        }
+
+        $category->save();
+
+        $request->session()->flash('success', 'Category updated successfully');
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Category updated successfully'
+        ]);
     }
 
     public function destroy($categoryID, Request $request)
